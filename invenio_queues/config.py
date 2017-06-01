@@ -22,7 +22,7 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Proxy to the curren stats module."""
+"""Default configuration for QUEUES."""
 
 from celery import current_app as current_celery_app
 

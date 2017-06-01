@@ -26,7 +26,6 @@
 
 from __future__ import absolute_import, print_function
 
-from celery import current_app as current_celery_app
 from flask import current_app
 from pkg_resources import iter_entry_points
 from werkzeug.utils import cached_property
@@ -36,7 +35,7 @@ from .queue import Queue
 
 
 class _InvenioQueuesState(object):
-    """State object for Invenio stats."""
+    """State object for Invenio queues."""
 
     def __init__(self, app, connection_pool):
         self.app = app
@@ -45,7 +44,7 @@ class _InvenioQueuesState(object):
 
     @cached_property
     def queues(self):
-        if not self._queues:
+        if self._queues is None:
             self._queues = dict()
             for ep in iter_entry_points(group='invenio_queues.queues'):
                 try:
@@ -71,9 +70,13 @@ class _InvenioQueuesState(object):
         """Delete queue for all or specific event types."""
         self._action('delete', **kwargs)
 
+    def purge(self, **kwargs):
+        """Delete queue for all or specific event types."""
+        self._action('purge', **kwargs)
+
 
 class InvenioQueues(object):
-    """Invenio-Stats extension."""
+    """Invenio-Queues extension."""
 
     def __init__(self, app=None, **kwargs):
         """Extension initialization."""
@@ -83,8 +86,9 @@ class InvenioQueues(object):
     def init_app(self, app, entry_point_group='invenio_queues.queues'):
         """Flask application initialization."""
         self.init_config(app)
-        app.extensions['invenio-queues'] = _InvenioQueuesState(app,
-                                                               app.config['QUEUES_CONNECTION_POOL'])
+        app.extensions['invenio-queues'] = \
+            _InvenioQueuesState(app, app.config['QUEUES_CONNECTION_POOL'])
+        return app
 
     def init_config(self, app):
         """Initialize configuration."""

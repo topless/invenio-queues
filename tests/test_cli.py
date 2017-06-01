@@ -26,31 +26,33 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import Flask
-from flask.cli import ScriptInfo
 from click.testing import CliRunner
-from invenio_queues import InvenioQueues
-import pkg_resources
-from mock import MagicMock, Mock, patch
+from flask.cli import ScriptInfo
+from invenio_queues.cli import queues
 
 
-def test_declare():
-    with patch('pkg_resources.EntryPoint') as MockEntryPoint:
-        # Test that the CLI command succeeds when the entrypoint does
-        # return a function.
+def test_init(queues_app):
+    with queues_app.app_context():
         runner = CliRunner()
+        script_info = ScriptInfo(create_app=lambda info: queues_app)
+        result = runner.invoke(
+            queues, ['init'], obj=script_info)
+        assert result.exit_code == 0
 
-        entrypoint = MockEntryPoint('ep1', 'ep1')
-        entrypoint.load.return_value = MagicMock()
-        with patch('invenio_queues.cli.iter_entry_points',
-                   return_value=[entrypoint]):
-            result = runner.invoke(
-                instance, ['migrate-secret-key', '--old-key',
-                           'OLD_SECRET_KEY'],
-                obj=script_info)
-            assert result.exit_code == 0
-            assert entrypoint.load.called
-            entrypoint.load.return_value.assert_called_with(
-                old_key='OLD_SECRET_KEY'
-            )
-            assert 'Successfully changed secret key.' in result.output
+
+def test_purge(queues_app):
+    with queues_app.app_context():
+        runner = CliRunner()
+        script_info = ScriptInfo(create_app=lambda info: queues_app)
+        result = runner.invoke(
+            queues, ['purge'], obj=script_info)
+        assert result.exit_code == 0
+
+
+def test_delete(queues_app):
+    with queues_app.app_context():
+        runner = CliRunner()
+        script_info = ScriptInfo(create_app=lambda info: queues_app)
+        result = runner.invoke(
+            queues, ['delete'], obj=script_info)
+        assert result.exit_code == 0

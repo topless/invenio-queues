@@ -27,10 +27,8 @@
 from __future__ import absolute_import, print_function
 
 import click
-from flask import current_app
 from flask.cli import with_appcontext
 from invenio_search.cli import index
-from pkg_resources import iter_entry_points
 from .proxies import current_queues
 
 
@@ -43,8 +41,6 @@ def queues():
 @with_appcontext
 def init():
     """Initialize indexing queue."""
-    import ipdb
-    ipdb.set_trace()
     current_queues.declare()
     click.secho('Queue has been initialized.', fg='green')
 
