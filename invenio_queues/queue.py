@@ -29,8 +29,10 @@ from __future__ import absolute_import, print_function
 from contextlib import contextmanager
 
 from celery import current_app as current_celery_app
-from kombu import Producer, Queue as Q
+from kombu import Queue as Q
+from kombu import Producer
 from kombu.compat import Consumer
+from werkzeug.utils import cached_property
 
 
 class Queue(object):
@@ -42,8 +44,12 @@ class Queue(object):
         self.celery_app = celery_app or current_celery_app
         self.exchange = exchange
         self.routing_key = routing_key
-        self.connection_pool = connection_pool
+        self._connection_pool = connection_pool
         self.no_ack = no_ack
+
+    @cached_property
+    def connection_pool(self):
+        return self._connection_pool()
 
     @property
     def queue(self):
@@ -86,8 +92,9 @@ class Queue(object):
         with self.connection_pool.acquire(block=True) as conn:
             yield self.consumer(conn)
 
-    def publish(self, events):
+    def publish(self, *events):
         """Publish events."""
+        assert len(events) > 0
         with self.create_producer() as producer:
             for event in events:
                 producer.publish(event)

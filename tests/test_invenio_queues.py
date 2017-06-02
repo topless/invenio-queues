@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2016 CERN.
+# Copyright (C) 2017 CERN.
 #
 # Invenio is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -22,8 +22,16 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Default configuration for QUEUES."""
+"""Module tests."""
 
-from celery import current_app as current_celery_app
+from __future__ import absolute_import, print_function
 
-QUEUES_CONNECTION_POOL = lambda : current_celery_app.pool
+from click.testing import CliRunner
+from invenio_queues.cli import queues
+from conftest import mock_declare_queues
+
+from mock import patch
+
+
+def test_publish(queues_app):
+    pass
