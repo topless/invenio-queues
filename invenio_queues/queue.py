@@ -28,6 +28,7 @@ from __future__ import absolute_import, print_function
 
 from contextlib import contextmanager
 
+from amqp.exceptions import NotFound
 from celery import current_app as current_celery_app
 from kombu import Queue as Q
 from kombu import Producer
@@ -49,6 +50,7 @@ class Queue(object):
 
     @cached_property
     def connection_pool(self):
+        """Retrieve the connection pool to the AMQP service."""
         return self._connection_pool()
 
     @property
@@ -60,6 +62,19 @@ class Queue(object):
                 exchange=self.exchange,
                 routing_key=self.routing_key
             )(conn)
+
+    @property
+    def exists(self):
+        """Test if this queue exists in the AMQP store.
+
+        :returns: True if the queue exists, else False.
+        :rtype: bool
+        """
+        try:
+            self.queue.queue_declare(passive=True)
+        except NotFound:
+            return False
+        return True
 
     def producer(self, conn):
         """Get a consumer for a connection."""
@@ -76,6 +91,9 @@ class Queue(object):
             connection=conn,
             queue=self.queue.name,
             exchange=self.exchange.name,
+            exchange_type=self.exchange.type,
+            durable=self.exchange.durable,
+            auto_delete=self.exchange.auto_delete,
             routing_key=self.routing_key,
             no_ack=self.no_ack,
         )

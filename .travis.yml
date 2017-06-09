@@ -35,6 +35,9 @@ matrix:
 cache:
   - pip
 
+services:
+  - rabbitmq
+
 env:
   - REQUIREMENTS=lowest
   - REQUIREMENTS=release DEPLOY=true

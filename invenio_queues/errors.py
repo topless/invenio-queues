@@ -22,8 +22,10 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Default configuration for QUEUES."""
+"""Errors used in Invenio-Queues."""
 
-from .utils import get_celery_connection_pool
+from __future__ import absolute_import, print_function
 
-QUEUES_CONNECTION_POOL = get_celery_connection_pool
+
+class DuplicateQueueError(Exception):
+    """Error raised when a duplicate queue is detected."""

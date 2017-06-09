@@ -22,8 +22,11 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
-"""Default configuration for QUEUES."""
+"""Invenio Queues utility functions."""
 
-from .utils import get_celery_connection_pool
+from celery import current_app as current_celery_app
 
-QUEUES_CONNECTION_POOL = get_celery_connection_pool
+
+def get_celery_connection_pool():
+    """Retrieve the celery queue connection pool."""
+    return current_celery_app.pool

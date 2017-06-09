@@ -28,38 +28,86 @@ from __future__ import absolute_import, print_function
 
 import shutil
 import tempfile
+from functools import wraps
 
 import pytest
-from celery import current_app as current_celery_app
 from flask import Flask
 from flask_babelex import Babel
-from invenio_queues import InvenioQueues
 from kombu import Exchange
 from mock import patch
-
+from pkg_resources import EntryPoint
 
 MOCK_MQ_EXCHANGE = Exchange(
-    'events',
+    'test_events',
     type='direct',
     delivery_mode='transient',  # in-memory queue
+    durable=True,
 )
 
 
-def mock_declare_queues():
-    return [dict(name='stats_record_view', exchange=MOCK_MQ_EXCHANGE)]
+def remove_queues(app):
+    """Delete all queues declared on the current app."""
+    ext = app.extensions['invenio-queues']
+    for name, queue in ext.queues.items():
+        if queue.exists:
+            queue.queue.delete()
+
+
+def mock_iter_entry_points_factory(data):
+    """Create a mock iter_entry_points function."""
+    def entrypoints(group, name=None):
+        from pkg_resources import iter_entry_points
+        if group == 'invenio_queues.queues':
+            for entrypoint in data:
+                yield entrypoint
+        else:
+            yield iter_entry_points(group=group, name=name)
+    return entrypoints
 
 
 @pytest.yield_fixture()
-def instance_path():
-    """Temporary instance path."""
-    path = tempfile.mkdtemp()
-    yield path
-    shutil.rmtree(path)
+def test_queues_entrypoints(app):
+    """Declare some queues by mocking the invenio_queues.queues entrypoint.
+
+    It yields a list like [{name: queue_name, exchange: conf}, ...].
+    """
+    data = []
+    result = []
+    for idx in range(5):
+        queue_name = 'queue{}'.format(idx)
+        from pkg_resources import EntryPoint
+        entrypoint = EntryPoint(queue_name, queue_name)
+        conf = dict(name=queue_name, exchange=MOCK_MQ_EXCHANGE)
+        entrypoint.load = lambda conf=conf: (lambda: [conf])
+        data.append(entrypoint)
+        result.append(conf)
+
+    entrypoints = mock_iter_entry_points_factory(data)
+
+    with patch('pkg_resources.iter_entry_points',
+               entrypoints):
+        remove_queues(app)
+        try:
+            yield result
+        finally:
+            remove_queues(app)
+
+
+@pytest.yield_fixture()
+def test_queues(app, test_queues_entrypoints):
+    """Declare test queues."""
+    ext = app.extensions['invenio-queues']
+    for conf in test_queues_entrypoints:
+        queue = ext.queues[conf['name']]
+        queue.queue.declare()
+        assert queue.exists
+    yield test_queues_entrypoints
 
 
 @pytest.fixture()
-def app(instance_path):
+def app():
     """Flask application fixture."""
+    from invenio_queues import InvenioQueues
     app_ = Flask('testapp')
     app_.config.update(
         SECRET_KEY='SECRET_KEY',
@@ -68,24 +116,3 @@ def app(instance_path):
     Babel(app_)
     InvenioQueues(app_)
     return app_
-
-
-@pytest.yield_fixture()
-def queues_app(app):
-    """Flask application fixture."""
-    app = Flask('queues_app')
-    app.config.update(
-        SECRET_KEY='SECRET_KEY',
-        TESTING=True,
-        QUEUES_CONNECTION_POOL=current_celery_app.pool,
-    )
-    InvenioQueues(app)
-
-    with patch('pkg_resources.EntryPoint') as MockEntryPoint:
-        entrypoint = MockEntryPoint('ep1', 'ep2')
-        entrypoint.load.return_value = mock_declare_queues
-        with patch('invenio_queues.ext.iter_entry_points',
-                   return_value=[entrypoint]):
-            qs = app.extensions['invenio-queues']
-            qs.queues
-    return app

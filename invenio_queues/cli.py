@@ -27,35 +27,69 @@
 from __future__ import absolute_import, print_function
 
 import click
+from click.exceptions import ClickException
 from flask.cli import with_appcontext
-from invenio_search.cli import index
+
 from .proxies import current_queues
 
 
-@index.group(chain=True)
+@click.group(chain=True)
 def queues():
     """Manage events queue."""
 
 
-@queues.command('init')
+@queues.command('list')
+@click.option('--declared', is_flag=True, help='show declared queues.')
+@click.option('--undeclared', is_flag=True,
+              help='show undeclared queues.')
 @with_appcontext
-def init():
-    """Initialize indexing queue."""
-    current_queues.declare()
-    click.secho('Queue has been initialized.', fg='green')
+def list(declared, undeclared):
+    """List configured queues."""
+    queues = current_queues.queues.values()
+    if declared:
+        queues = filter(lambda queue: queue.exists, queues)
+    elif undeclared:
+        queues = filter(lambda queue: not queue.exists, queues)
+    queue_names = [queue.routing_key for queue in queues]
+    queue_names.sort()
+    for queue in queue_names:
+        click.secho(queue)
+
+
+@queues.command('declare')
+@click.argument('queues', nargs=-1)
+@with_appcontext
+def declare(queues):
+    """Initialize the given queues."""
+    current_queues.declare(queues=queues)
+    click.secho(
+        'Queues {} have been declared.'.format(
+            queues or current_queues.queues.keys()),
+        fg='green'
+    )
 
 
 @queues.command('purge')
+@click.argument('queues', nargs=-1)
 @with_appcontext
-def purge_queue():
-    """Purge indexing queue."""
-    current_queues.purge()
-    click.secho('Queue has been purged.', fg='green')
+def purge_queues(queues=None):
+    """Purge the given queues."""
+    current_queues.purge(queues=queues)
+    click.secho(
+        'Queues {} have been purged.'.format(
+            queues or current_queues.queues.keys()),
+        fg='green'
+    )
 
 
 @queues.command('delete')
+@click.argument('queues', nargs=-1)
 @with_appcontext
-def delete_queue():
-    """Delete indexing queue."""
-    current_queues.delete()
-    click.secho('Queue has been deleted.', fg='green')
+def delete_queue(queues):
+    """Delete the given queues."""
+    current_queues.delete(queues=queues)
+    click.secho(
+        'Queues {} have been deleted.'.format(
+            queues or current_queues.queues.keys()),
+        fg='green'
+    )
