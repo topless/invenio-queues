@@ -92,8 +92,8 @@ def test_publish_and_consume(app, test_queues, config):
     app.config.update(config)
     with app.app_context():
         queue = current_queues.queues[test_queues[0]['name']]
-        queue.publish(1, 2, 3)
-        queue.publish(4, 5)
+        queue.publish([1, 2, 3])
+        queue.publish([4, 5])
         assert list(queue.consume()) == [1, 2, 3, 4, 5]
 
 
@@ -116,8 +116,8 @@ def test_routing(app, test_queues, config):
     with app.app_context():
         q0 = current_queues.queues[test_queues[0]['name']]
         q1 = current_queues.queues[test_queues[1]['name']]
-        q0.publish({'event': '0'})
-        q1.publish({'event': '1'})
+        q0.publish([{'event': '0'}])
+        q1.publish([{'event': '1'}])
 
         assert list(q0.consume()) == [{'event': '0'}]
         assert list(q1.consume()) == [{'event': '1'}]

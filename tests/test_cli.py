@@ -77,7 +77,7 @@ def test_purge(app, test_queues, purged):
         expected = purged or configured
         data = [1, 2, 3]
         for conf in test_queues:
-            current_queues.queues[conf['name']].publish(*data)
+            current_queues.queues[conf['name']].publish(data)
         runner = CliRunner()
         script_info = ScriptInfo(create_app=lambda info: app)
         result = runner.invoke(

@@ -116,7 +116,7 @@ class Queue(object):
         with self.connection_pool.acquire(block=True) as conn:
             yield self.consumer(conn)
 
-    def publish(self, *events):
+    def publish(self, events):
         """Publish events."""
         assert len(events) > 0
         with self.create_producer() as producer:
