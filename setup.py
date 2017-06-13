@@ -32,9 +32,11 @@ readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
 tests_require = [
+    'amqp>=2.1.4',
     'check-manifest>=0.25',
     'coverage>=4.0',
     'isort>=4.2.2',
+    'mock>=1.0.0',
     'pydocstyle>=1.0.0',
     'pytest-cache>=1.0',
     'pytest-cov>=1.8.0',
@@ -61,7 +63,7 @@ setup_requires = [
 
 install_requires = [
     'Flask-BabelEx>=0.9.2',
-    'invenio-celery>=1.0.0b2',
+    'kombu>=4.0.2,<5.0',
 ]
 
 packages = find_packages()

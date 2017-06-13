@@ -26,6 +26,7 @@
 
 from __future__ import absolute_import, print_function
 
+import os
 import shutil
 import tempfile
 from functools import wraps
@@ -47,21 +48,24 @@ MOCK_MQ_EXCHANGE = Exchange(
 
 def remove_queues(app):
     """Delete all queues declared on the current app."""
-    ext = app.extensions['invenio-queues']
-    for name, queue in ext.queues.items():
-        if queue.exists:
-            queue.queue.delete()
+    with app.app_context():
+        ext = app.extensions['invenio-queues']
+        for name, queue in ext.queues.items():
+            if queue.exists:
+                queue.queue.delete()
 
 
 def mock_iter_entry_points_factory(data):
     """Create a mock iter_entry_points function."""
+    from pkg_resources import iter_entry_points
+
     def entrypoints(group, name=None):
-        from pkg_resources import iter_entry_points
         if group == 'invenio_queues.queues':
             for entrypoint in data:
                 yield entrypoint
         else:
-            yield iter_entry_points(group=group, name=name)
+            for x in iter_entry_points(group=group, name=name):
+                yield x
     return entrypoints
 
 
@@ -86,7 +90,6 @@ def test_queues_entrypoints(app):
 
     with patch('pkg_resources.iter_entry_points',
                entrypoints):
-        remove_queues(app)
         try:
             yield result
         finally:
@@ -96,11 +99,12 @@ def test_queues_entrypoints(app):
 @pytest.yield_fixture()
 def test_queues(app, test_queues_entrypoints):
     """Declare test queues."""
-    ext = app.extensions['invenio-queues']
-    for conf in test_queues_entrypoints:
-        queue = ext.queues[conf['name']]
-        queue.queue.declare()
-        assert queue.exists
+    with app.app_context():
+        ext = app.extensions['invenio-queues']
+        for conf in test_queues_entrypoints:
+            queue = ext.queues[conf['name']]
+            queue.queue.declare()
+            assert queue.exists
     yield test_queues_entrypoints
 
 

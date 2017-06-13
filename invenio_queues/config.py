@@ -24,6 +24,6 @@
 
 """Default configuration for QUEUES."""
 
-from .utils import get_celery_connection_pool
+from .utils import get_connection_pool
 
-QUEUES_CONNECTION_POOL = get_celery_connection_pool
+QUEUES_CONNECTION_POOL = get_connection_pool

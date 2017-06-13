@@ -77,8 +77,19 @@ def test_duplicate_queue(app):
                 current_queues.queues()
 
 
-def test_publish_and_consume(app, test_queues):
+with_different_brokers = pytest.mark.parametrize("config", [
+    # test with default connection pool
+    {},
+    # test with in memory broker as the exception is not the same
+    {'QUEUES_BROKER_URL': 'memory://'},
+])
+"""Test with standard and in memory broker."""
+
+
+@with_different_brokers
+def test_publish_and_consume(app, test_queues, config):
     """Test queue.publish and queue.consume."""
+    app.config.update(config)
     with app.app_context():
         queue = current_queues.queues[test_queues[0]['name']]
         queue.publish(1, 2, 3)
@@ -86,8 +97,22 @@ def test_publish_and_consume(app, test_queues):
         assert list(queue.consume()) == [1, 2, 3, 4, 5]
 
 
-def test_routing(app, test_queues):
+@with_different_brokers
+def test_queue_exists(app, test_queues_entrypoints, config):
+    """Test the "declare" CLI."""
+    app.config.update(config)
+    with app.app_context():
+        for queue in current_queues.queues.values():
+            assert not queue.exists
+        current_queues.declare()
+        for queue in current_queues.queues.values():
+            assert queue.exists
+
+
+@with_different_brokers
+def test_routing(app, test_queues, config):
     """Test basic routing of messages."""
+    app.config.update(config)
     with app.app_context():
         q0 = current_queues.queues[test_queues[0]['name']]
         q1 = current_queues.queues[test_queues[1]['name']]

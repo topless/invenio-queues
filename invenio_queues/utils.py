@@ -24,9 +24,20 @@
 
 """Invenio Queues utility functions."""
 
-from celery import current_app as current_celery_app
+from flask import current_app
+from kombu import Connection
+from kombu.pools import connections
 
 
-def get_celery_connection_pool():
-    """Retrieve the celery queue connection pool."""
-    return current_celery_app.pool
+def get_connection_pool():
+    """Retrieve the broker connection pool.
+
+    Note: redis is not supported as "queue.exists" doesn't behave the same
+    way.
+    """
+    return connections[Connection(
+        # Allow invenio-queues to have a different broker than the Celery one
+        current_app.config.get('QUEUES_BROKER_URL',
+                               # otherwise use Celery's BROKER_URL
+                               current_app.config.get('BROKER_URL', 'amqp://'))
+    )]

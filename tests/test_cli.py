@@ -28,7 +28,6 @@ from __future__ import absolute_import, print_function
 
 import pytest
 from click.testing import CliRunner
-from conftest import remove_queues
 from flask.cli import ScriptInfo
 
 from invenio_queues.cli import queues

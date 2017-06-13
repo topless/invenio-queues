@@ -28,8 +28,7 @@ from __future__ import absolute_import, print_function
 
 from contextlib import contextmanager
 
-from amqp.exceptions import NotFound
-from celery import current_app as current_celery_app
+from amqp.exceptions import ChannelError, NotFound
 from kombu import Queue as Q
 from kombu import Producer
 from kombu.compat import Consumer
@@ -40,9 +39,8 @@ class Queue(object):
     """Simple event queue."""
 
     def __init__(self, exchange, routing_key, connection_pool,
-                 no_ack=True, celery_app=None):
+                 no_ack=True):
         """Initialize indexer."""
-        self.celery_app = celery_app or current_celery_app
         self.exchange = exchange
         self.routing_key = routing_key
         self._connection_pool = connection_pool
@@ -67,13 +65,21 @@ class Queue(object):
     def exists(self):
         """Test if this queue exists in the AMQP store.
 
+        Note: This doesn't work with redis as declaring queues has not effect
+        except creating the exchange.
+
         :returns: True if the queue exists, else False.
         :rtype: bool
         """
         try:
-            self.queue.queue_declare(passive=True)
+            queue = self.queue
+            queue.queue_declare(passive=True)
         except NotFound:
             return False
+        except ChannelError as e:
+            if e.reply_code == '404':
+                return False
+            raise e
         return True
 
     def producer(self, conn):
