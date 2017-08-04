@@ -32,7 +32,6 @@ readme = open('README.rst').read()
 history = open('CHANGES.rst').read()
 
 tests_require = [
-    'amqp>=2.1.4',
     'check-manifest>=0.25',
     'coverage>=4.0',
     'isort>=4.2.2',
@@ -42,7 +41,6 @@ tests_require = [
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
     'pytest>=2.8.0',
-    'redis>=2.10.0',
 ]
 
 extras_require = {
@@ -64,6 +62,8 @@ setup_requires = [
 install_requires = [
     'Flask-BabelEx>=0.9.2',
     'kombu>=4.0.2,<5.0',
+    'redis>=2.10.0',
+    'amqp>=2.1.4',
 ]
 
 packages = find_packages()
