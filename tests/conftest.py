@@ -33,7 +33,6 @@ from functools import wraps
 
 import pytest
 from flask import Flask
-from flask_babelex import Babel
 from kombu import Exchange
 from mock import patch
 from pkg_resources import EntryPoint
@@ -117,6 +116,5 @@ def app():
         SECRET_KEY='SECRET_KEY',
         TESTING=True,
     )
-    Babel(app_)
     InvenioQueues(app_)
     return app_

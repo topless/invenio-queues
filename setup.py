@@ -55,12 +55,11 @@ for reqs in extras_require.values():
     extras_require['all'].extend(reqs)
 
 setup_requires = [
-    'Babel>=1.3',
     'pytest-runner>=2.6.2',
 ]
 
 install_requires = [
-    'Flask-BabelEx>=0.9.2',
+    'Flask>=0.11',
     'kombu>=4.0.2,<5.0',
     'redis>=2.10.0',
     'amqp>=2.1.4',

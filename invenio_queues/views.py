@@ -30,7 +30,6 @@
 from __future__ import absolute_import, print_function
 
 from flask import Blueprint, render_template
-from flask_babelex import gettext as _
 
 blueprint = Blueprint(
     'invenio_queues',
@@ -45,4 +44,4 @@ def index():
     """Basic view."""
     return render_template(
         "invenio_queues/index.html",
-        module_name=_('Invenio-Queues'))
+        module_name='Invenio-Queues')
