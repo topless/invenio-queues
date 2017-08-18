@@ -1,8 +1,8 @@
 =======================
- Invenio-Queues v0.1.0
+ Invenio-Queues v1.0.0a1
 =======================
 
-Invenio-Queues v0.1.0 was released on TBD, 2017.
+Invenio-Queues v1.0.0a1 was released on August 18, 2017.
 
 About
 -----
@@ -19,7 +19,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-queues==0.1.0
+   $ pip install invenio-queues==1.0.0a1
 
 Documentation
 -------------
