@@ -11,6 +11,7 @@
 from __future__ import absolute_import, print_function
 
 from .ext import InvenioQueues
+from .proxies import current_queues
 from .version import __version__
 
 __all__ = (

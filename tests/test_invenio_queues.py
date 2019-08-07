@@ -11,16 +11,13 @@
 from __future__ import absolute_import, print_function
 
 import pytest
-from click.testing import CliRunner
-from conftest import MOCK_MQ_EXCHANGE, mock_iter_entry_points_factory, \
-    remove_queues
+from conftest import MOCK_MQ_EXCHANGE, mock_iter_entry_points_factory
 from flask import Flask
 from mock import patch
 from pkg_resources import EntryPoint
 
-from invenio_queues import InvenioQueues
+from invenio_queues import InvenioQueues, current_queues
 from invenio_queues.errors import DuplicateQueueError
-from invenio_queues.proxies import current_queues
 
 
 def test_version():
