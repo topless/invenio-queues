@@ -21,6 +21,7 @@
 # In applying this license, CERN does not
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
+dist: trusty
 
 notifications:
   email: false
@@ -48,6 +49,7 @@ python:
   - "3.5"
 
 before_install:
+  - "pip install --upgrade pip"
   - "nvm install 6; nvm use 6"
   - "travis_retry pip install --upgrade pip setuptools py"
   - "travis_retry pip install twine wheel coveralls requirements-builder"

@@ -29,8 +29,8 @@ from __future__ import absolute_import, print_function
 from contextlib import contextmanager
 
 from amqp.exceptions import ChannelError, NotFound
-from kombu import Queue as Q
 from kombu import Producer
+from kombu import Queue as Q
 from kombu.compat import Consumer
 from werkzeug.utils import cached_property
 
