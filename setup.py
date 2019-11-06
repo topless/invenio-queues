@@ -62,7 +62,6 @@ install_requires = [
     'Flask>=0.11',
     'kombu>=4.0.2,<5.0',
     'redis>=2.10.0',
-    'amqp>=2.1.4',
 ]
 
 packages = find_packages()
