@@ -18,14 +18,10 @@ from invenio_queues.cli import queues
 from invenio_queues.proxies import current_queues
 
 
-def queues_exist(names, exist=True):
+def queues_exist(names):
     """Test if the provided queues exist."""
-    result = [current_queues.queues[name].exists
-              for name in names]
-    if exist:
-        all(result)
-    else:
-        not any(result)
+    result = [current_queues.queues[name].exists for name in names]
+    return all(result)
 
 
 @pytest.mark.parametrize("declared", [
@@ -38,15 +34,16 @@ def test_declare(app, test_queues_entrypoints, declared):
     with app.app_context():
         configured = [conf['name'] for conf in test_queues_entrypoints]
         expected = declared or configured
-        queues_exist(configured, False)
+        assert not queues_exist(configured)
         runner = CliRunner()
         script_info = ScriptInfo(create_app=lambda info: app)
         result = runner.invoke(
             queues, ['declare'] + declared, obj=script_info)
         assert result.exit_code == 0
-        queues_exist(expected)
-        queues_exist([name for name in configured if
-                      name not in expected], False)
+        assert queues_exist(expected)
+        other = [name for name in configured if name not in expected]
+        if other:
+            assert not queues_exist(other)
 
 
 @pytest.mark.parametrize("purged", [
@@ -86,15 +83,16 @@ def test_delete(app, test_queues, deleted):
     with app.app_context():
         configured = [conf['name'] for conf in test_queues]
         expected = deleted or configured
-        queues_exist(configured, True)
+        assert queues_exist(configured)
         runner = CliRunner()
         script_info = ScriptInfo(create_app=lambda info: app)
         result = runner.invoke(
             queues, ['delete'] + deleted, obj=script_info)
         assert result.exit_code == 0
-        queues_exist(expected, False)
-        queues_exist([name for name in configured if
-                      name not in expected], True)
+        assert not queues_exist(expected)
+        other = [name for name in configured if name not in expected]
+        if other:
+            assert queues_exist(other)
 
 
 def test_list(app, test_queues):
@@ -122,3 +120,53 @@ def test_list(app, test_queues):
             queues, ['list', '--declared'], obj=script_info)
         assert result.exit_code == 0
         assert result.output.split('\n')[0:-1] == declared
+
+
+def test_declare_existing(app, test_queues_entrypoints):
+    """Test the scenario of declaring a tasks that already exists."""
+    with app.app_context():
+        configured = [conf['name'] for conf in test_queues_entrypoints]
+        runner = CliRunner()
+        script_info = ScriptInfo(create_app=lambda info: app)
+        # Declare all the configured queues
+        result = runner.invoke(
+            queues, ['declare'] + configured, obj=script_info)
+        assert result.exit_code == 0
+        # Declare configured queues again without deletion
+        result = runner.invoke(
+            queues, ['declare'] + configured, obj=script_info)
+        assert result.exit_code == 0
+
+
+def test_delete_without_queues(app, test_queues):
+    """Test delete without any queue declared."""
+    with app.app_context():
+        deleted = [conf['name'] for conf in test_queues]
+        runner = CliRunner()
+        script_info = ScriptInfo(create_app=lambda info: app)
+        # Delete a first time
+        result = runner.invoke(
+            queues, ['delete'] + deleted, obj=script_info)
+        assert result.exit_code == 0
+        # Delete without any queue declared
+        result = runner.invoke(
+            queues, ['delete'] + deleted, obj=script_info)
+        assert result.exit_code == 0
+
+
+def test_purge_force(app, test_queues):
+    """Test purge function with the --force option."""
+    with app.app_context():
+        purged = [conf['name'] for conf in test_queues]
+        runner = CliRunner()
+        script_info = ScriptInfo(create_app=lambda info: app)
+        result = runner.invoke(
+            queues, ['delete'] + purged, obj=script_info)
+        # Test with regular call
+        result = runner.invoke(
+            queues, ['purge'] + purged, obj=script_info)
+        assert not result.exit_code == 0
+        # Test with the --force
+        result = runner.invoke(
+            queues, ['purge', '--force'] + purged, obj=script_info)
+        assert result.exit_code == 0

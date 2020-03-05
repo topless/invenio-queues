@@ -11,8 +11,6 @@ dist: trusty
 notifications:
   email: false
 
-sudo: false
-
 language: python
 
 matrix:
@@ -30,8 +28,8 @@ env:
   - REQUIREMENTS=devel
 
 python:
-  - "2.7"
-  - "3.5"
+  - "3.6"
+  - "3.7"
 
 before_install:
   - "pip install --upgrade pip"
@@ -60,6 +58,6 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: "2.7"
+    python: "3.6"
     repo: inveniosoftware/invenio-queues
     condition: $DEPLOY = true

@@ -42,8 +42,8 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask>=0.11',
-    'kombu>=4.0.2,<5.0',
+    'invenio-base>=1.2.2',
+    'invenio-celery>=1.2.0',
     'redis>=2.10.0',
 ]
 

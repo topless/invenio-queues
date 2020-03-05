@@ -6,7 +6,7 @@
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""CLI for Invenio-Stats."""
+"""CLI for Invenio-Queues."""
 
 from __future__ import absolute_import, print_function
 
@@ -24,8 +24,7 @@ def queues():
 
 @queues.command('list')
 @click.option('--declared', is_flag=True, help='show declared queues.')
-@click.option('--undeclared', is_flag=True,
-              help='show undeclared queues.')
+@click.option('--undeclared', is_flag=True, help='show undeclared queues.')
 @with_appcontext
 def list(declared, undeclared):
     """List configured queues."""
@@ -55,10 +54,11 @@ def declare(queues):
 
 @queues.command('purge')
 @click.argument('queues', nargs=-1)
+@click.option('--force', is_flag=True, default=False)
 @with_appcontext
-def purge_queues(queues=None):
+def purge_queues(force, queues=None):
     """Purge the given queues."""
-    current_queues.purge(queues=queues)
+    current_queues.purge(force, queues=queues)
     click.secho(
         'Queues {} have been purged.'.format(
             queues or current_queues.queues.keys()),

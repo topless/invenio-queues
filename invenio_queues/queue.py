@@ -67,7 +67,7 @@ class Queue(object):
         return True
 
     def producer(self, conn):
-        """Get a consumer for a connection."""
+        """Get a producer for a connection."""
         return Producer(
             conn,
             exchange=self.exchange,
