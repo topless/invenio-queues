@@ -21,12 +21,9 @@
 # In applying this license, CERN does not
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
-dist: trusty
 
 notifications:
   email: false
-
-sudo: false
 
 language: python
 
@@ -45,8 +42,8 @@ env:
   - REQUIREMENTS=devel
 
 python:
-  - "2.7"
-  - "3.5"
+  - "3.6"
+  - "3.7"
 
 before_install:
   - "pip install --upgrade pip"
@@ -75,6 +72,6 @@ deploy:
   distributions: "sdist bdist_wheel"
   on:
     tags: true
-    python: "2.7"
+    python: "3.6"
     repo: inveniosoftware/invenio-queues
     condition: $DEPLOY = true
