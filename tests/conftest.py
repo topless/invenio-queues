@@ -71,8 +71,7 @@ def test_queues_entrypoints(app):
 
     entrypoints = mock_iter_entry_points_factory(data)
 
-    with patch('pkg_resources.iter_entry_points',
-               entrypoints):
+    with patch('pkg_resources.iter_entry_points', entrypoints):
         try:
             yield result
         finally:

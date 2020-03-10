@@ -6,11 +6,10 @@
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""Invenio module for collecting statistics."""
+"""Invenio module for managing queues."""
 
 from __future__ import absolute_import, print_function
 
-from flask import current_app
 from werkzeug.utils import cached_property
 
 from . import config
@@ -29,21 +28,21 @@ class _InvenioQueuesState(object):
 
     @cached_property
     def queues(self):
-        # import iter_entry_points here so that it can be mocked in tests
+        # NOTE: import iter_entry_points here so it can be mocked in tests
         from pkg_resources import iter_entry_points
         if self._queues is None:
             self._queues = dict()
             for ep in iter_entry_points(group=self.entry_point_group):
-                entry = ep.load()
                 for cfg in ep.load()():
                     if cfg['name'] in self._queues:
                         raise DuplicateQueueError(
                             'Duplicate queue {0} in entry point '
                             '{1}'.format(cfg['name'], ep.name))
 
-                    self._queues[cfg['name']] = \
-                        Queue(cfg['exchange'], cfg['name'],
-                              self.connection_pool)
+                    self._queues[cfg['name']] = Queue(
+                        cfg['exchange'], cfg['name'], self.connection_pool
+                    )
+
         return self._queues
 
     def _action(self, action, queues=None):
@@ -75,6 +74,10 @@ class InvenioQueues(object):
         if app:
             self.init_app(app, **kwargs)
 
+    def __getattr__(self, name):
+        """Proxy to state object."""
+        return getattr(self._state, name, None)
+
     def init_app(self, app, entry_point_group='invenio_queues.queues'):
         """Flask application initialization."""
         self.init_config(app)
@@ -90,7 +93,3 @@ class InvenioQueues(object):
         for k in dir(config):
             if k.startswith('QUEUES_'):
                 app.config.setdefault(k, getattr(config, k))
-
-    def __getattr__(self, name):
-        """Proxy to state object."""
-        return getattr(self._state, name, None)

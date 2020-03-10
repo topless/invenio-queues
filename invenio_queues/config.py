@@ -10,4 +10,12 @@
 
 from .utils import get_connection_pool
 
+QUEUES_BROKER_URL = None
+"""Provide a specific broker_url for queues.
+
+If the variable is not configured it falls back to the default BROKER_URL of
+our application.
+"""
+
 QUEUES_CONNECTION_POOL = get_connection_pool
+"""Default queues connection pool."""

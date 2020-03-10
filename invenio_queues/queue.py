@@ -22,8 +22,7 @@ from werkzeug.utils import cached_property
 class Queue(object):
     """Simple event queue."""
 
-    def __init__(self, exchange, routing_key, connection_pool,
-                 no_ack=True):
+    def __init__(self, exchange, routing_key, connection_pool, no_ack=True):
         """Initialize indexer."""
         self.exchange = exchange
         self.routing_key = routing_key

@@ -53,8 +53,7 @@ def test_duplicate_queue(app):
 
         entrypoints = mock_iter_entry_points_factory(data)
 
-        with patch('pkg_resources.iter_entry_points',
-                   entrypoints):
+        with patch('pkg_resources.iter_entry_points', entrypoints):
             with pytest.raises(DuplicateQueueError):
                 current_queues.queues()
 
