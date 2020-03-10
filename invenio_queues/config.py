@@ -10,4 +10,8 @@
 
 from .utils import get_connection_pool
 
+QUEUES_BROKER_URL = None
+"""Allow invenio-queues to have a different broker than the Celery."""
+
 QUEUES_CONNECTION_POOL = get_connection_pool
+"""Default queues connection pool."""

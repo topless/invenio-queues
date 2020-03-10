@@ -21,7 +21,6 @@ Invenio-Queues.
    installation
    configuration
    usage
-   examplesapp
 
 
 API Reference

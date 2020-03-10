@@ -12,9 +12,3 @@ API Docs
 
 .. automodule:: invenio_queues.ext
    :members:
-
-Views
------
-
-.. automodule:: invenio_queues.views
-   :members:

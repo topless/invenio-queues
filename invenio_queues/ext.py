@@ -6,11 +6,10 @@
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""Invenio module for collecting statistics."""
+"""Invenio module for managin queues."""
 
 from __future__ import absolute_import, print_function
 
-from flask import current_app
 from werkzeug.utils import cached_property
 
 from . import config
@@ -34,7 +33,6 @@ class _InvenioQueuesState(object):
         if self._queues is None:
             self._queues = dict()
             for ep in iter_entry_points(group=self.entry_point_group):
-                entry = ep.load()
                 for cfg in ep.load()():
                     if cfg['name'] in self._queues:
                         raise DuplicateQueueError(
