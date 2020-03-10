@@ -31,7 +31,7 @@ from click.testing import CliRunner
 from conftest import MOCK_MQ_EXCHANGE, mock_iter_entry_points_factory, \
     remove_queues
 from flask import Flask
-from mock import patch
+from unittest.mock import patch
 from pkg_resources import EntryPoint
 
 from invenio_queues import InvenioQueues

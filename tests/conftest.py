@@ -34,7 +34,7 @@ from functools import wraps
 import pytest
 from flask import Flask
 from kombu import Exchange
-from mock import patch
+from unittest.mock import patch
 from pkg_resources import EntryPoint
 
 MOCK_MQ_EXCHANGE = Exchange(
