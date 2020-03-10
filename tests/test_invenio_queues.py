@@ -10,10 +10,11 @@
 
 from __future__ import absolute_import, print_function
 
+from unittest.mock import patch
+
 import pytest
 from conftest import MOCK_MQ_EXCHANGE, mock_iter_entry_points_factory
 from flask import Flask
-from mock import patch
 from pkg_resources import EntryPoint
 
 from invenio_queues import InvenioQueues, current_queues

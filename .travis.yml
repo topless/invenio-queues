@@ -6,8 +6,6 @@
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-dist: trusty
-
 notifications:
   email: false
 
@@ -19,8 +17,10 @@ matrix:
 cache:
   - pip
 
-services:
-  - rabbitmq
+addons:
+  apt:
+    packages:
+    - rabbitmq-server
 
 env:
   - REQUIREMENTS=lowest
@@ -33,7 +33,6 @@ python:
 
 before_install:
   - "pip install --upgrade pip"
-  - "nvm install 6; nvm use 6"
   - "travis_retry pip install --upgrade pip setuptools py"
   - "travis_retry pip install twine wheel coveralls requirements-builder"
   - "requirements-builder -e all --level=min setup.py > .travis-lowest-requirements.txt"

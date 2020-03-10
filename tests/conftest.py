@@ -14,11 +14,11 @@ import os
 import shutil
 import tempfile
 from functools import wraps
+from unittest.mock import patch
 
 import pytest
 from flask import Flask
 from kombu import Exchange
-from mock import patch
 from pkg_resources import EntryPoint
 
 MOCK_MQ_EXCHANGE = Exchange(
