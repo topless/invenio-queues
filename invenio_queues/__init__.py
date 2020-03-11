@@ -73,13 +73,11 @@ Suppose you have a queue with name "my_queue" you can directly access it by name
 >>> my_queue = current_queues.queues["my_queue"]
 
 
-Queue Operations
-^^^^^^^^^^^^^^^^
-After we have defined and instantiated (declare) our Queue we can start using it.
-
 Publish events
-""""""""""""""
-This operation pushes an event to the queue and is as simple as
+^^^^^^^^^^^^^^
+
+After we have defined and instantiated (declare) our Queue we can start using it.
+This operation pushes an event or events to the queue:
 
 .. code-block:: python
 
@@ -90,10 +88,10 @@ This operation pushes an event to the queue and is as simple as
 
 
 Comsume events
-""""""""""""""
-After you have published some events in your queue, you can consume them, thus
-remove them from the queue. The consume method of the queue will return a
-generator for the events.
+^^^^^^^^^^^^^^
+
+After you have published some events in your queue, you can consume them.
+The consume method of the queue will return a generator for the events:
 
 .. code-block:: python
 
