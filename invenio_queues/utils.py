@@ -14,12 +14,8 @@ from kombu.pools import connections
 
 
 def get_connection_pool():
-    """Retrieve the broker connection pool.
-
-    Note: redis is not supported as "queue.exists" doesn't behave the same way.
-    """
-    # Allow invenio-queues to have a different broker than the Celery one
-    # otherwise fallback to Celery's BROKER_URL
-    url = current_app.config.get('QUEUES_BROKER_URL') or \
+    """Retrieve the broker connection pool."""
+    # NOTE: Allow invenio-queues to have a different broker than default.
+    broker_url = current_app.config.get('QUEUES_BROKER_URL') or \
         current_app.config.get('BROKER_URL', 'amqp://')
-    return connections[Connection(url)]
+    return connections[Connection(broker_url)]
