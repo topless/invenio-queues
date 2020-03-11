@@ -7,7 +7,7 @@
 # under the terms of the MIT License; see LICENSE file for more details.
 
 
-r"""Invenio module for managin queues
+r"""Invenio module for managing queues.
 
 This guide will show you how to get started with Invenio-Queues. It assumes
 that you already have knowledge of Flask applications and Invenio modules.

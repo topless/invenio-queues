@@ -39,9 +39,10 @@ class _InvenioQueuesState(object):
                             'Duplicate queue {0} in entry point '
                             '{1}'.format(cfg['name'], ep.name))
 
-                    self._queues[cfg['name']] = \
-                        Queue(cfg['exchange'], cfg['name'],
-                              self.connection_pool)
+                    self._queues[cfg['name']] = Queue(
+                        cfg['exchange'], cfg['name'], self.connection_pool
+                    )
+
         return self._queues
 
     def _action(self, action, queues=None):
