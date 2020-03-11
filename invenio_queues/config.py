@@ -11,7 +11,11 @@
 from .utils import get_connection_pool
 
 QUEUES_BROKER_URL = None
-"""Allow invenio-queues to have a different broker than the Celery."""
+"""Provide a specific broker_url for queues.
+
+If the variable is not configured it falls back to the default BROKER_URL of
+our application and if that is not configured as well, uses RabbitMQ 'amqp://'.
+"""
 
 QUEUES_CONNECTION_POOL = get_connection_pool
 """Default queues connection pool."""

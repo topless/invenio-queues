@@ -6,7 +6,7 @@
 # Invenio is free software; you can redistribute it and/or modify it
 # under the terms of the MIT License; see LICENSE file for more details.
 
-"""Invenio module for managin queues."""
+"""Invenio module for managing queues."""
 
 from __future__ import absolute_import, print_function
 
@@ -69,12 +69,12 @@ class InvenioQueues(object):
     """Invenio-Queues extension."""
 
     def __init__(self, app=None, **kwargs):
-        """Extension initialization."""
+        """Initialize extension."""
         if app:
             self.init_app(app, **kwargs)
 
     def init_app(self, app, entry_point_group='invenio_queues.queues'):
-        """Flask application initialization."""
+        """Initialize application."""
         self.init_config(app)
         app.extensions['invenio-queues'] = _InvenioQueuesState(
             app,

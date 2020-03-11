@@ -10,16 +10,11 @@
 
 from __future__ import absolute_import, print_function
 
-import os
-import shutil
-import tempfile
-from functools import wraps
 from unittest.mock import patch
 
 import pytest
 from flask import Flask
 from kombu import Exchange
-from pkg_resources import EntryPoint
 
 MOCK_MQ_EXCHANGE = Exchange(
     'test_events',
