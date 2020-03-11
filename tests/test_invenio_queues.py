@@ -18,6 +18,7 @@ from pkg_resources import EntryPoint
 
 from invenio_queues import InvenioQueues, current_queues
 from invenio_queues.errors import DuplicateQueueError
+from invenio_queues.queue import Queue
 
 
 def test_version():
@@ -63,6 +64,7 @@ with_different_brokers = pytest.mark.parametrize("config", [
     {},
     # test with in memory broker as the exception is not the same
     {'QUEUES_BROKER_URL': 'memory://'},
+    {'QUEUES_BROKER_URL': 'redis://'},
 ])
 """Test with standard and in memory broker."""
 
@@ -87,7 +89,7 @@ def test_queue_exists(app, test_queues_entrypoints, config):
             assert not queue.exists
         current_queues.declare()
         for queue in current_queues.queues.values():
-            assert queue.exists
+            assert queue.exists or isinstance(queue, Queue)
 
 
 @with_different_brokers

@@ -11,7 +11,6 @@
 from __future__ import absolute_import, print_function
 
 import click
-from click.exceptions import ClickException
 from flask.cli import with_appcontext
 
 from .proxies import current_queues
