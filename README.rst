@@ -21,7 +21,5 @@
 
 Invenio module for managing queues.
 
-TODO: Please provide feature overview of module
-
 Further documentation is available on
 https://invenio-queues.readthedocs.io/
