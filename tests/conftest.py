@@ -10,16 +10,11 @@
 
 from __future__ import absolute_import, print_function
 
-import os
-import shutil
-import tempfile
-from functools import wraps
 from unittest.mock import patch
 
 import pytest
 from flask import Flask
 from kombu import Exchange
-from pkg_resources import EntryPoint
 
 MOCK_MQ_EXCHANGE = Exchange(
     'test_events',
@@ -58,11 +53,12 @@ def test_queues_entrypoints(app):
 
     It yields a list like [{name: queue_name, exchange: conf}, ...].
     """
+    from pkg_resources import EntryPoint
+
     data = []
     result = []
     for idx in range(5):
         queue_name = 'queue{}'.format(idx)
-        from pkg_resources import EntryPoint
         entrypoint = EntryPoint(queue_name, queue_name)
         conf = dict(name=queue_name, exchange=MOCK_MQ_EXCHANGE)
         entrypoint.load = lambda conf=conf: (lambda: [conf])

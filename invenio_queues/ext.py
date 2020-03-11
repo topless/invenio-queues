@@ -70,7 +70,7 @@ class InvenioQueues(object):
     """Invenio-Queues extension."""
 
     def __init__(self, app=None, **kwargs):
-        """Extension initialization."""
+        """Initialize extension."""
         if app:
             self.init_app(app, **kwargs)
 
@@ -79,7 +79,7 @@ class InvenioQueues(object):
         return getattr(self._state, name, None)
 
     def init_app(self, app, entry_point_group='invenio_queues.queues'):
-        """Flask application initialization."""
+        """Initialize application."""
         self.init_config(app)
         app.extensions['invenio-queues'] = _InvenioQueuesState(
             app,

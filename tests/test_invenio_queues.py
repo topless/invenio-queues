@@ -19,6 +19,7 @@ from pkg_resources import EntryPoint
 
 from invenio_queues import InvenioQueues, current_queues
 from invenio_queues.errors import DuplicateQueueError
+from invenio_queues.queue import Queue
 
 
 def test_version():
@@ -63,6 +64,8 @@ with_different_brokers = pytest.mark.parametrize("config", [
     {},
     # test with in memory broker as the exception is not the same
     {'QUEUES_BROKER_URL': 'memory://'},
+    {'QUEUES_BROKER_URL': 'amqp://'},
+    {'QUEUES_BROKER_URL': 'redis://'},
 ])
 """Test with standard and in memory broker."""
 
@@ -87,6 +90,10 @@ def test_queue_exists(app, test_queues_entrypoints, config):
             assert not queue.exists
         current_queues.declare()
         for queue in current_queues.queues.values():
+            # NOTE: skip existence check for redis since is not supported
+            broker_url = app.config.get('QUEUES_BROKER_URL') or ''
+            if broker_url.startswith('redis'):
+                continue
             assert queue.exists
 
 
