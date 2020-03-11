@@ -17,44 +17,71 @@ It will then explain key topics and concepts of this module.
 Getting started
 ---------------
 
+You will learn how to register queues and to interact with it. To begin with,
+you need to setup your virtual environment and install this module.
+
+You need an application to work with, that can be created with the following
+commands in a Python shell:
+
+>>> from flask import current_app
+
+You can then initialize the module:
+
+>>> from invenio_queues.ext import InvenioQueues
+>>> ext_queues = InvenioQueues(app)
+
+In our example, we are using RabbitMQ as a broker, which can be configured
+as follow:
+
+>>> current_app.config['QUEUES_BROKER_URL'] = 'amqp://localhost:5672'
+
 Register queues
 ^^^^^^^^^^^^^^^
 
-- Entrypoints
-
-.. code-block:: python
-
-   'invenio_queues.queues': 'example_app.queues.declare_queues'
-
-- Function
+To register queues, you need to start by creating an exchange for the queues:
 
 .. code-block:: python
 
    from kombu import Exchange
 
-   def declare_queues():
+   default_exchange = Exchange(
+       'example',
+       type='direct',
+       delivery_mode='transient',  # in-memory queue
+   )
 
-       default_exchange = Exchange(
-           'example',
-           type='direct',
-           delivery_mode='transient',  # in-memory queue
-       )
+You can now configure the queues as followed:
 
-       return [
-           dict(
-               name='notifications',
-               exchange=default_exchange
-           ),
-           dict(
-               name='jobs',
-               exchange=default_exchange
-           )
-       ]
+.. code-block:: python
+
+   from invenio_queues.proxies import current_queues
+   from invenio_queues.queue import Queue
+
+   current_queues.queues = dict()
+   connection_pool = current_app.config.get('QUEUES_CONNECTION_POOL')
+
+   current_queues.queues['notifications'] = Queue(
+       default_exchange,
+       'notifications',
+       connection_pool
+   )
+
+   current_queues.queues['jobs'] = Queue(
+       default_exchange,
+       'jobs',
+       connection_pool
+   )
 
 Create queues
 ^^^^^^^^^^^^^
 
->>>
+Now that the queues are configured, you can create them:
+
+>>> current_queues.declare()
+
+If you want to delete them, this can be done in the same way:
+
+>>> current_queues.delete()
 
 Access queues
 ^^^^^^^^^^^^^
