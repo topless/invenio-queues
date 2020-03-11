@@ -14,7 +14,7 @@ QUEUES_BROKER_URL = None
 """Provide a specific broker_url for queues.
 
 If the variable is not configured it falls back to the default BROKER_URL of
-our application and if that is not configured as well, uses RabbitMQ 'amqp://'.
+our application.
 """
 
 QUEUES_CONNECTION_POOL = get_connection_pool

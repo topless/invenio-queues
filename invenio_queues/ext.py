@@ -28,7 +28,7 @@ class _InvenioQueuesState(object):
 
     @cached_property
     def queues(self):
-        # import iter_entry_points here so that it can be mocked in tests
+        # NOTE: import iter_entry_points here so it can be mocked in tests
         from pkg_resources import iter_entry_points
         if self._queues is None:
             self._queues = dict()
@@ -73,6 +73,10 @@ class InvenioQueues(object):
         if app:
             self.init_app(app, **kwargs)
 
+    def __getattr__(self, name):
+        """Proxy to state object."""
+        return getattr(self._state, name, None)
+
     def init_app(self, app, entry_point_group='invenio_queues.queues'):
         """Initialize application."""
         self.init_config(app)
@@ -88,7 +92,3 @@ class InvenioQueues(object):
         for k in dir(config):
             if k.startswith('QUEUES_'):
                 app.config.setdefault(k, getattr(config, k))
-
-    def __getattr__(self, name):
-        """Proxy to state object."""
-        return getattr(self._state, name, None)

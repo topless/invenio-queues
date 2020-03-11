@@ -24,7 +24,7 @@ Register queues
 
 .. code-block:: python
 
-   'invenio_queues.queues':'example_app.queues.declare_queues'
+   'invenio_queues.queues': 'example_app.queues.declare_queues'
 
 - Function
 
@@ -59,17 +59,46 @@ Create queues
 Access queues
 ^^^^^^^^^^^^^
 
->>> queues list
+You can list the available queues by using the command line interface
 
-Publish queues
-^^^^^^^^^^^^^^
+>>> invenio queues list
 
->>>
+or programmatically
 
-Comsume queues
-^^^^^^^^^^^^^^
+>>> from invenio_queues.proxies import current_queues
+>>> current_queues.queues.key()
 
->>>
+Suppose you have a queue with name "my_queue" you can directly access it by name
+
+>>> my_queue = current_queues.queues["my_queue"]
+
+
+Queue Operations
+^^^^^^^^^^^^^^^^
+After we have defined and instantiated (declare) our Queue we can start using it.
+
+Publish events
+""""""""""""""
+This operation pushes an event to the queue and is as simple as
+
+.. code-block:: python
+
+    # NOTE: publish expects and array of events
+
+    events = [1, 2, 3]
+    current_queues.queues["my_queue"].publish(events)
+
+
+Comsume events
+""""""""""""""
+After you have published some events in your queue, you can consume them, thus
+remove them from the queue. The consume method of the queue will return a
+generator for the events.
+
+.. code-block:: python
+
+    queue_gen = current_queues.queues["my_queue"].consume()
+    list(queue_gen)
 
 """
 
