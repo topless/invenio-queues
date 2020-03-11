@@ -26,35 +26,3 @@ Usage
 =====
 
 .. automodule:: invenio_queues
-
-[DRAFT] How to declare queues?
-
-- Entrypoints
-
-.. code-block:: python
-
-   'invenio_queues.queues':'example_app.queues.declare_queues'
-
-- Function
-
-.. code-block:: python
-
-   def declare_queues():
-       """Index statistics events."""
-
-       default_exchange = Exchange(
-           'example',
-           type='direct',
-           delivery_mode='transient',  # in-memory queue
-       )
-
-       return [
-           dict(
-               name='notifications',
-               exchange=default_exchange
-           ),
-           dict(
-               name='jobs',
-               exchange=default_exchange
-           )
-       ]
