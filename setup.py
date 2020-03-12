@@ -43,7 +43,7 @@ setup_requires = [
 install_requires = [
     'invenio-base>=1.2.2',
     'invenio-celery>=1.2.0',
-    'redis>=2.10.0',
+    'redis>=3.2.0',
 ]
 
 packages = find_packages()
